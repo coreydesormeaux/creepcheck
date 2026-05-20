@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <title>CreepCheck</title>
 
   <link rel="stylesheet" href="style.css">
@@ -10,21 +11,33 @@
 
 <body>
 
-  <h1>CreepCheck</h1>
+  <div class="container">
 
-  <table>
-    <thead>
-      <tr>
-        <th>Service</th>
-        <th>Old Price</th>
-        <th>New Price</th>
-        <th>% Increase</th>
-      </tr>
-    </thead>
+    <h1>CreepCheck</h1>
 
-    <tbody id="subscription-table">
-    </tbody>
-  </table>
+    <p class="subtitle">
+      Track subscription price increases before they quietly drain your wallet.
+    </p>
+
+    <div class="summary-card">
+      <h2 id="total-increase"></h2>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Service</th>
+          <th>Old Price</th>
+          <th>New Price</th>
+          <th>% Increase</th>
+        </tr>
+      </thead>
+
+      <tbody id="subscription-table">
+      </tbody>
+    </table>
+
+  </div>
 
   <script src="script.js"></script>
 

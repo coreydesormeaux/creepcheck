@@ -2,12 +2,12 @@ const subscriptions = [
   {
     name: "Netflix",
     oldPrice: 14.99,
-    newPrice: 18.99
+    newPrice: 16.49
   },
   {
     name: "Spotify",
     oldPrice: 9.99,
-    newPrice: 12.99
+    newPrice: 10.99
   },
   {
     name: "Disney+",
@@ -18,19 +18,34 @@ const subscriptions = [
 
 const table = document.getElementById("subscription-table");
 
+let totalIncrease = 0;
+
 subscriptions.forEach(sub => {
 
+  const increase = sub.newPrice - sub.oldPrice;
+
+  totalIncrease += increase;
+
   const percentIncrease =
-    (((sub.newPrice - sub.oldPrice) / sub.oldPrice) * 100).toFixed(1);
+    (((increase) / sub.oldPrice) * 100).toFixed(1);
+
+  let warningClass = "";
+
+  if (percentIncrease >= 25) {
+    warningClass = "warning";
+  }
 
   const row = `
-    <tr>
+    <tr class="${warningClass}">
       <td>${sub.name}</td>
-      <td>$${sub.oldPrice}</td>
-      <td>$${sub.newPrice}</td>
+      <td>$${sub.oldPrice.toFixed(2)}</td>
+      <td>$${sub.newPrice.toFixed(2)}</td>
       <td>${percentIncrease}%</td>
     </tr>
   `;
 
   table.innerHTML += row;
 });
+
+document.getElementById("total-increase").innerText =
+  `Monthly Cost Increase: $${totalIncrease.toFixed(2)}`;
