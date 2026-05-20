@@ -3,49 +3,80 @@ const subscriptions = [
     name: "Netflix",
     oldPrice: 14.99,
     newPrice: 16.49
-  },
-  {
-    name: "Spotify",
-    oldPrice: 9.99,
-    newPrice: 10.99
-  },
-  {
-    name: "Disney+",
-    oldPrice: 11.99,
-    newPrice: 15.99
   }
 ];
 
 const table = document.getElementById("subscription-table");
 
-let totalIncrease = 0;
+const totalIncreaseElement =
+  document.getElementById("total-increase");
 
-subscriptions.forEach(sub => {
+function renderSubscriptions() {
 
-  const increase = sub.newPrice - sub.oldPrice;
+  table.innerHTML = "";
 
-  totalIncrease += increase;
+  let totalIncrease = 0;
 
-  const percentIncrease =
-    (((increase) / sub.oldPrice) * 100).toFixed(1);
+  subscriptions.forEach(sub => {
 
-  let warningClass = "";
+    const increase = sub.newPrice - sub.oldPrice;
 
-  if (percentIncrease >= 25) {
-    warningClass = "warning";
-  }
+    totalIncrease += increase;
 
-  const row = `
-    <tr class="${warningClass}">
-      <td>${sub.name}</td>
-      <td>$${sub.oldPrice.toFixed(2)}</td>
-      <td>$${sub.newPrice.toFixed(2)}</td>
-      <td>${percentIncrease}%</td>
-    </tr>
-  `;
+    const percentIncrease =
+      ((increase / sub.oldPrice) * 100).toFixed(1);
 
-  table.innerHTML += row;
-});
+    let warningClass = "";
 
-document.getElementById("total-increase").innerText =
-  `Monthly Cost Increase: $${totalIncrease.toFixed(2)}`;
+    if (percentIncrease >= 25) {
+      warningClass = "warning";
+    }
+
+    const row = `
+      <tr class="${warningClass}">
+        <td>${sub.name}</td>
+        <td>$${sub.oldPrice.toFixed(2)}</td>
+        <td>$${sub.newPrice.toFixed(2)}</td>
+        <td>${percentIncrease}%</td>
+      </tr>
+    `;
+
+    table.innerHTML += row;
+  });
+
+  totalIncreaseElement.innerText =
+    `Monthly Cost Increase: $${totalIncrease.toFixed(2)}`;
+}
+
+renderSubscriptions();
+
+document
+  .getElementById("add-btn")
+  .addEventListener("click", () => {
+
+    const name =
+      document.getElementById("name").value;
+
+    const oldPrice =
+      parseFloat(document.getElementById("old-price").value);
+
+    const newPrice =
+      parseFloat(document.getElementById("new-price").value);
+
+    if (!name || !oldPrice || !newPrice) {
+      alert("Please fill out all fields.");
+      return;
+    }
+
+    subscriptions.push({
+      name,
+      oldPrice,
+      newPrice
+    });
+
+    renderSubscriptions();
+
+    document.getElementById("name").value = "";
+    document.getElementById("old-price").value = "";
+    document.getElementById("new-price").value = "";
+  });

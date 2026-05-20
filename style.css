@@ -22,12 +22,33 @@ h1 {
   font-size: 18px;
 }
 
-.summary-card {
+.summary-card,
+.form-card {
   background: white;
   padding: 20px;
   border-radius: 10px;
   margin-bottom: 30px;
   box-shadow: 0px 2px 6px rgba(0,0,0,0.08);
+}
+
+.form-card input {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 12px;
+  box-sizing: border-box;
+}
+
+button {
+  padding: 12px 18px;
+  border: none;
+  background: #222;
+  color: white;
+  cursor: pointer;
+  border-radius: 6px;
+}
+
+button:hover {
+  opacity: 0.9;
 }
 
 table {
@@ -49,10 +70,6 @@ th {
 td {
   padding: 16px;
   border-bottom: 1px solid #eee;
-}
-
-tr:hover {
-  background: #f9f9f9;
 }
 
 .warning {
