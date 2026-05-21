@@ -100,6 +100,13 @@ function cleanMerchant(value) {
     .toUpperCase();
 }
 
+function getReviewScore(item) {
+  const priceCreepScore = item.increase * 12;
+  const yearlySpendScore = item.yearlyCost * 0.15;
+
+  return priceCreepScore + yearlySpendScore;
+}
+
 function detectRecurringCharges(transactions) {
   const grouped = transactions.reduce((groups, row) => {
     const merchant = cleanMerchant(
@@ -151,6 +158,7 @@ function detectRecurringCharges(transactions) {
 export default function CreepCheckLandingPage() {
   const scannerRef = useRef(null);
   const reportRef = useRef(null);
+  const checklistRef = useRef(null);
   const fileInputRef = useRef(null);
   const [report, setReport] = useState(detectRecurringCharges(sampleTransactions));
   const [fileName, setFileName] = useState("Sample report");
@@ -170,7 +178,27 @@ export default function CreepCheckLandingPage() {
       monthlySpend,
       monthlyIncrease,
       yearlySpend: monthlySpend * 12,
+      yearlyCreep: monthlyIncrease * 12,
       biggestIncrease,
+    };
+  }, [report]);
+
+  const savingsPlan = useMemo(() => {
+    const risingCharges = report.filter((item) => item.increase > 0);
+    const highCostCharges = report.filter((item) => item.yearlyCost >= 250);
+    const reviewFirst = [...report]
+      .sort((a, b) => getReviewScore(b) - getReviewScore(a))
+      .slice(0, 3);
+    const possibleAnnualSavings = reviewFirst.reduce(
+      (sum, item) => sum + item.latestAmount * 3 + item.increase * 12,
+      0
+    );
+
+    return {
+      risingCharges,
+      highCostCharges,
+      reviewFirst,
+      possibleAnnualSavings,
     };
   }, [report]);
 
@@ -450,6 +478,73 @@ export default function CreepCheckLandingPage() {
               </div>
             )}
           </div>
+
+          <div className="mt-8 grid lg:grid-cols-[0.9fr_1.1fr] gap-6">
+            <div className="rounded-3xl border border-amber-200 bg-amber-50 p-6">
+              <p className="text-sm font-medium text-amber-900 uppercase tracking-wider mb-3">
+                Savings plan
+              </p>
+              <h3 className="text-3xl font-bold tracking-tight mb-3">
+                Start with the charges most likely to save you money.
+              </h3>
+              <p className="text-slate-700 leading-relaxed mb-5">
+                Your scan shows {currency(totals.yearlyCreep)} in yearly price creep
+                and {savingsPlan.highCostCharges.length} subscriptions above{" "}
+                {currency(250)} per year.
+              </p>
+              <button
+                onClick={() => checklistRef.current?.scrollIntoView({ behavior: "smooth" })}
+                className="bg-slate-950 text-white px-5 py-3 rounded-xl font-medium hover:bg-slate-800 transition"
+              >
+                Get My Checklist
+              </button>
+            </div>
+
+            <div className="rounded-3xl border border-slate-200 p-6">
+              <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-5">
+                <div>
+                  <p className="text-sm text-slate-500">Review first</p>
+                  <h3 className="text-2xl font-bold tracking-tight">
+                    Potential review opportunity: {currency(savingsPlan.possibleAnnualSavings)}
+                  </h3>
+                  <p className="text-sm text-slate-500 mt-2">
+                    Based on three months of top charges plus yearly price creep.
+                  </p>
+                </div>
+                <div className="rounded-full bg-slate-100 px-3 py-1 text-sm text-slate-700">
+                  {savingsPlan.risingCharges.length} price hikes found
+                </div>
+              </div>
+
+              <div className="space-y-3">
+                {savingsPlan.reviewFirst.length ? (
+                  savingsPlan.reviewFirst.map((item) => (
+                    <div
+                      key={item.merchant}
+                      className="rounded-2xl border border-slate-200 p-4 flex items-center justify-between gap-4"
+                    >
+                      <div>
+                        <p className="font-semibold">{item.merchant}</p>
+                        <p className="text-sm text-slate-500 mt-1">
+                          {item.increase > 0
+                            ? `${currency(item.increase)} monthly increase`
+                            : `${currency(item.yearlyCost)} per year`}
+                        </p>
+                      </div>
+                      <div className="text-right text-sm text-slate-600">
+                        <p className="font-semibold text-slate-950">Review</p>
+                        <p>Keep, downgrade, or cancel</p>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-slate-600">
+                    Upload a fuller CSV to generate a prioritized savings plan.
+                  </p>
+                )}
+              </div>
+            </div>
+          </div>
         </section>
 
         <section className="border-y border-slate-200 bg-slate-50">
@@ -495,15 +590,15 @@ export default function CreepCheckLandingPage() {
           </div>
         </section>
 
-        <section className="bg-slate-950 text-white">
+        <section ref={checklistRef} className="bg-slate-950 text-white">
           <div className="max-w-4xl mx-auto px-6 py-24 text-center">
             <h2 className="text-4xl md:text-5xl font-bold tracking-tight mb-6">
               Stop paying for subscriptions you would cancel if you noticed them sooner.
             </h2>
 
             <p className="text-lg text-slate-300 leading-relaxed mb-10 max-w-2xl mx-auto">
-              Join the list for a simple subscription-saving checklist and updates
-              when full CreepCheck reports are available.
+              Join the list for a simple subscription-saving checklist based on
+              the same review order shown in your scan.
             </p>
 
             <form onSubmit={saveLead} className="max-w-xl mx-auto flex flex-col sm:flex-row gap-3">
