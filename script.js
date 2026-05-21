@@ -26,6 +26,8 @@ function renderSubscriptions() {
   table.innerHTML = "";
 
   let totalIncrease = 0;
+  let largestIncrease = 0;
+let largestService = "";
 
   subscriptions.forEach((sub, index) => {
 
@@ -35,6 +37,12 @@ function renderSubscriptions() {
 
     const percentIncrease =
       ((increase / sub.oldPrice) * 100).toFixed(1);
+      if (percentIncrease > largestIncrease) {
+
+  largestIncrease = percentIncrease;
+
+  largestService = sub.name;
+}
 
     let warningClass = "";
 
@@ -42,20 +50,31 @@ function renderSubscriptions() {
       warningClass = "warning";
     }
 
-    const row = `
-      <tr class="${warningClass}">
-        <td>${sub.name}</td>
-        <td>$${sub.oldPrice.toFixed(2)}</td>
-        <td>$${sub.newPrice.toFixed(2)}</td>
-        <td>${percentIncrease}%</td>
-      </tr>
-    `;
+  const row = `
+  <tr class="${warningClass}">
+    <td>${sub.name}</td>
+    <td>$${sub.oldPrice.toFixed(2)}</td>
+    <td>$${sub.newPrice.toFixed(2)}</td>
+    <td>${percentIncrease}%</td>
+
+    <td>
+      <button onclick="deleteSubscription(${index})">
+        Delete
+      </button>
+    </td>
+  </tr>
+`;
 
     table.innerHTML += row;
   });
 
   totalIncreaseElement.innerText =
     `Monthly Cost Increase: $${totalIncrease.toFixed(2)}`;
+    document.getElementById("subscription-count").innerText =
+  `Tracked Subscriptions: ${subscriptions.length}`;
+
+document.getElementById("largest-increase").innerText =
+  `Largest Increase: ${largestService} (${largestIncrease}%)`;
 }
 
 renderSubscriptions();
@@ -92,3 +111,11 @@ document
     document.getElementById("old-price").value = "";
     document.getElementById("new-price").value = "";
   });
+  function deleteSubscription(index) {
+
+  subscriptions.splice(index, 1);
+
+  saveSubscriptions();
+
+  renderSubscriptions();
+}
