@@ -1,4 +1,6 @@
-const subscriptions = [
+let subscriptions = JSON.parse(
+  localStorage.getItem("subscriptions")
+) || [
   {
     name: "Netflix",
     oldPrice: 14.99,
@@ -11,13 +13,21 @@ const table = document.getElementById("subscription-table");
 const totalIncreaseElement =
   document.getElementById("total-increase");
 
+function saveSubscriptions() {
+
+  localStorage.setItem(
+    "subscriptions",
+    JSON.stringify(subscriptions)
+  );
+}
+
 function renderSubscriptions() {
 
   table.innerHTML = "";
 
   let totalIncrease = 0;
 
-  subscriptions.forEach(sub => {
+  subscriptions.forEach((sub, index) => {
 
     const increase = sub.newPrice - sub.oldPrice;
 
@@ -73,6 +83,8 @@ document
       oldPrice,
       newPrice
     });
+
+    saveSubscriptions();
 
     renderSubscriptions();
 
