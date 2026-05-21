@@ -8,7 +8,7 @@ CreepCheck helps people find subscription price creep from bank or credit card C
 - Lets users upload a CSV export and see a quick scan.
 - Detects repeated merchants as likely recurring subscriptions.
 - Flags monthly spend, annual spend, and likely price increases.
-- Captures interested customers for the subscription-saving checklist.
+- Captures interested customers for the subscription-saving checklist through a lead webhook.
 
 ## Local Development
 
@@ -19,6 +19,25 @@ npm run dev
 
 Open `http://localhost:3000`.
 
+## Lead Capture
+
+The checklist form posts to `/api/leads`, which forwards leads to a webhook.
+
+Set this environment variable in Vercel:
+
+```bash
+LEADS_WEBHOOK_URL=https://your-form-or-automation-webhook-url
+```
+
+Good simple options:
+
+- Formspree form endpoint
+- Zapier catch hook
+- Make webhook
+- Basin or Tally form endpoint
+
+Each lead includes the email address, source, scan totals, and top subscriptions to review.
+
 ## Deploy To Vercel
 
 1. Push this repo to GitHub.
@@ -27,9 +46,8 @@ Open `http://localhost:3000`.
    - Build command: `npm run build`
    - Install command: `npm install`
    - Output directory: leave blank
-4. Deploy.
-
-No environment variables are required for the current version.
+4. Add `LEADS_WEBHOOK_URL` in the Vercel project settings.
+5. Deploy.
 
 ## First Business Offer
 

@@ -165,6 +165,7 @@ export default function CreepCheckLandingPage() {
   const [uploadStatus, setUploadStatus] = useState("Try the sample report or upload a CSV export from your bank.");
   const [email, setEmail] = useState("");
   const [leadStatus, setLeadStatus] = useState("");
+  const [isSavingLead, setIsSavingLead] = useState(false);
 
   const totals = useMemo(() => {
     const monthlySpend = report.reduce((sum, item) => sum + item.latestAmount, 0);
@@ -244,7 +245,7 @@ export default function CreepCheckLandingPage() {
     reportRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
-  function saveLead(event) {
+  async function saveLead(event) {
     event.preventDefault();
 
     if (!email.includes("@")) {
@@ -252,13 +253,50 @@ export default function CreepCheckLandingPage() {
       return;
     }
 
-    const leads = JSON.parse(localStorage.getItem("creepcheck-leads") || "[]");
-    localStorage.setItem(
-      "creepcheck-leads",
-      JSON.stringify([...leads, { email, createdAt: new Date().toISOString() }])
-    );
-    setEmail("");
-    setLeadStatus("You are on the list. We will send the subscription-saving checklist soon.");
+    setIsSavingLead(true);
+    setLeadStatus("Saving your spot...");
+
+    try {
+      const response = await fetch("/api/leads", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email,
+          source: "checklist",
+          scan: {
+            fileName,
+            recurringCharges: report.length,
+            monthlySpend: totals.monthlySpend,
+            yearlySpend: totals.yearlySpend,
+            yearlyCreep: totals.yearlyCreep,
+            reviewFirst: savingsPlan.reviewFirst.map((item) => ({
+              merchant: item.merchant,
+              latestAmount: item.latestAmount,
+              yearlyCost: item.yearlyCost,
+              increase: item.increase,
+            })),
+          },
+        }),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.message || "Lead capture is not ready yet.");
+      }
+
+      setEmail("");
+      setLeadStatus("You are on the list. We will send the subscription-saving checklist soon.");
+    } catch (error) {
+      setLeadStatus(
+        error.message ||
+          "We could not save your email yet. Please try again in a minute."
+      );
+    } finally {
+      setIsSavingLead(false);
+    }
   }
 
   return (
@@ -609,8 +647,11 @@ export default function CreepCheckLandingPage() {
                 placeholder="you@example.com"
                 className="flex-1 rounded-2xl px-5 py-4 text-slate-950 outline-none"
               />
-              <button className="bg-white text-slate-950 px-7 py-4 rounded-2xl text-base font-semibold hover:bg-slate-100 transition">
-                Send Me The Checklist
+              <button
+                disabled={isSavingLead}
+                className="bg-white text-slate-950 px-7 py-4 rounded-2xl text-base font-semibold hover:bg-slate-100 transition disabled:cursor-not-allowed disabled:opacity-70"
+              >
+                {isSavingLead ? "Saving..." : "Send Me The Checklist"}
               </button>
             </form>
 
