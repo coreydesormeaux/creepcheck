@@ -20,18 +20,33 @@ const featuredCharges = [
   { name: "Apple Storage", price: "$3.99", change: "Duplicate cloud storage" },
 ];
 
+const trustCards = [
+  {
+    title: "No bank login",
+    text: "Upload a CSV export instead of connecting your financial accounts.",
+  },
+  {
+    title: "Private scan",
+    text: "Your file is checked on your device for this preview and is not stored in an account.",
+  },
+  {
+    title: "Clear next steps",
+    text: "See which subscriptions changed, what they cost each year, and what to review first.",
+  },
+];
+
 const valueCards = [
   {
-    title: "Private by default",
-    text: "CreepCheck scans CSV exports in your browser. No bank login required for this MVP.",
+    title: "Catch quiet price hikes",
+    text: "Spot subscriptions that went up a few dollars at a time before those increases become normal.",
   },
   {
-    title: "Built for clarity",
-    text: "The first report focuses on recurring charges, silent price increases, and the subscriptions worth reviewing.",
+    title: "See the annual damage",
+    text: "Turn small monthly charges into yearly totals so it is easier to decide what is worth keeping.",
   },
   {
-    title: "Ready to sell",
-    text: "Start with a free scan, collect email interest, then charge for deeper reports and cancellation help.",
+    title: "Cancel with confidence",
+    text: "Use the report to prioritize duplicate, unused, or overpriced services instead of guessing.",
   },
 ];
 
@@ -139,7 +154,7 @@ export default function CreepCheckLandingPage() {
   const fileInputRef = useRef(null);
   const [report, setReport] = useState(detectRecurringCharges(sampleTransactions));
   const [fileName, setFileName] = useState("Sample report");
-  const [uploadStatus, setUploadStatus] = useState("Try the sample report or upload a CSV export.");
+  const [uploadStatus, setUploadStatus] = useState("Try the sample report or upload a CSV export from your bank.");
   const [email, setEmail] = useState("");
   const [leadStatus, setLeadStatus] = useState("");
 
@@ -205,7 +220,7 @@ export default function CreepCheckLandingPage() {
     event.preventDefault();
 
     if (!email.includes("@")) {
-      setLeadStatus("Enter an email so we can save your early access spot.");
+      setLeadStatus("Enter an email so we can send your subscription-saving checklist.");
       return;
     }
 
@@ -215,7 +230,7 @@ export default function CreepCheckLandingPage() {
       JSON.stringify([...leads, { email, createdAt: new Date().toISOString() }])
     );
     setEmail("");
-    setLeadStatus("You are on the early access list. Next step: paid reports.");
+    setLeadStatus("You are on the list. We will send the subscription-saving checklist soon.");
   }
 
   return (
@@ -239,6 +254,14 @@ export default function CreepCheckLandingPage() {
           </button>
         </div>
       </header>
+
+      <div className="border-b border-slate-200 bg-slate-50">
+        <div className="max-w-6xl mx-auto px-6 py-3 flex flex-col sm:flex-row gap-2 sm:gap-6 text-sm text-slate-700">
+          <span className="font-medium text-slate-950">No bank login required</span>
+          <span>Your CSV is checked on your device</span>
+          <span>Clear subscription costs before you cancel</span>
+        </div>
+      </div>
 
       <main>
         <section className="max-w-6xl mx-auto px-6 py-20 lg:py-24 grid lg:grid-cols-2 gap-14 items-center">
@@ -272,10 +295,16 @@ export default function CreepCheckLandingPage() {
               </button>
             </div>
 
-            <div className="flex flex-wrap items-center gap-6 text-sm text-slate-500">
-              <div>No bank login required</div>
-              <div>CSV uploads only</div>
-              <div>Built for quick decisions</div>
+            <div className="grid sm:grid-cols-3 gap-3 text-sm text-slate-600">
+              {trustCards.map((item) => (
+                <div
+                  key={item.title}
+                  className="rounded-2xl border border-slate-200 bg-slate-50 p-4"
+                >
+                  <p className="font-semibold text-slate-950">{item.title}</p>
+                  <p className="mt-1 leading-relaxed">{item.text}</p>
+                </div>
+              ))}
             </div>
           </div>
 
@@ -320,14 +349,14 @@ export default function CreepCheckLandingPage() {
           <div className="max-w-6xl mx-auto px-6 py-20 grid lg:grid-cols-[0.9fr_1.1fr] gap-10 items-start">
             <div>
               <p className="text-sm font-medium text-slate-500 uppercase tracking-wider mb-4">
-                Free scanner
+                Free scan
               </p>
               <h2 className="text-4xl font-bold tracking-tight mb-5">
-                Give people a useful result before asking them to pay.
+                Check your statement for subscription creep in under a minute.
               </h2>
               <p className="text-lg text-slate-600 leading-relaxed">
-                This MVP reads common CSV exports locally, finds repeated merchants,
-                and turns the scan into a report you can sell around.
+                Upload a CSV export to find repeated charges, price increases,
+                and yearly costs that are easy to miss month by month.
               </p>
             </div>
 
@@ -469,12 +498,12 @@ export default function CreepCheckLandingPage() {
         <section className="bg-slate-950 text-white">
           <div className="max-w-4xl mx-auto px-6 py-24 text-center">
             <h2 className="text-4xl md:text-5xl font-bold tracking-tight mb-6">
-              Build the audience before building the bank integrations.
+              Stop paying for subscriptions you would cancel if you noticed them sooner.
             </h2>
 
             <p className="text-lg text-slate-300 leading-relaxed mb-10 max-w-2xl mx-auto">
-              Collect early users now. The first paid offer can be a low-cost
-              subscription audit and cancellation checklist.
+              Join the list for a simple subscription-saving checklist and updates
+              when full CreepCheck reports are available.
             </p>
 
             <form onSubmit={saveLead} className="max-w-xl mx-auto flex flex-col sm:flex-row gap-3">
@@ -486,7 +515,7 @@ export default function CreepCheckLandingPage() {
                 className="flex-1 rounded-2xl px-5 py-4 text-slate-950 outline-none"
               />
               <button className="bg-white text-slate-950 px-7 py-4 rounded-2xl text-base font-semibold hover:bg-slate-100 transition">
-                Join Early Access
+                Send Me The Checklist
               </button>
             </form>
 
@@ -503,7 +532,7 @@ export default function CreepCheckLandingPage() {
 
           <div className="flex items-center gap-6">
             <a href="#scanner" className="hover:text-slate-900 transition">
-              Privacy-first MVP
+              Privacy-first scan
             </a>
             <a href="mailto:hello@creepcheck.com" className="hover:text-slate-900 transition">
               Contact
