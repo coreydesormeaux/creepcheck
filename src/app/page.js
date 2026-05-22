@@ -68,6 +68,13 @@ const steps = [
   },
 ];
 
+const auditIncludes = [
+  "Full subscription review from your scan",
+  "Top cancellation and downgrade targets",
+  "Price creep summary with annualized impact",
+  "Simple checklist you can work through in one sitting",
+];
+
 function currency(value) {
   return new Intl.NumberFormat("en-US", {
     style: "currency",
@@ -166,6 +173,7 @@ export default function CreepCheckLandingPage() {
   const [email, setEmail] = useState("");
   const [leadStatus, setLeadStatus] = useState("");
   const [isSavingLead, setIsSavingLead] = useState(false);
+  const fullAuditUrl = process.env.NEXT_PUBLIC_FULL_AUDIT_URL || "";
 
   const totals = useMemo(() => {
     const monthlySpend = report.reduce((sum, item) => sum + item.latestAmount, 0);
@@ -243,6 +251,16 @@ export default function CreepCheckLandingPage() {
     setFileName("Sample report");
     setUploadStatus("Loaded the sample CreepCheck report.");
     reportRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
+  function openFullAudit() {
+    if (fullAuditUrl) {
+      window.location.href = fullAuditUrl;
+      return;
+    }
+
+    setLeadStatus("Leave your email and we will send you the Full Audit link when it opens.");
+    checklistRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
   async function saveLead(event) {
@@ -580,6 +598,56 @@ export default function CreepCheckLandingPage() {
                     Upload a fuller CSV to generate a prioritized savings plan.
                   </p>
                 )}
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-8 rounded-3xl border border-slate-200 bg-slate-950 p-6 sm:p-8 text-white">
+            <div className="grid lg:grid-cols-[1fr_0.75fr] gap-8 items-center">
+              <div>
+                <p className="text-sm font-medium text-amber-200 uppercase tracking-wider mb-4">
+                  Full Audit
+                </p>
+                <h3 className="text-3xl md:text-4xl font-bold tracking-tight mb-4">
+                  Want the complete cancellation plan?
+                </h3>
+                <p className="text-slate-300 leading-relaxed mb-6 max-w-2xl">
+                  Get a focused CreepCheck audit that turns your scan into a
+                  practical subscription cleanup plan, so you know what to keep,
+                  downgrade, cancel, or watch next month.
+                </p>
+
+                <div className="grid sm:grid-cols-2 gap-3">
+                  {auditIncludes.map((item) => (
+                    <div
+                      key={item}
+                      className="rounded-2xl border border-white/10 bg-white/5 p-4 text-sm text-slate-200"
+                    >
+                      {item}
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="rounded-3xl bg-white p-5 text-slate-950">
+                <p className="text-sm text-slate-500 mb-2">One-time audit</p>
+                <div className="flex items-end gap-2 mb-4">
+                  <span className="text-5xl font-bold">$5</span>
+                  <span className="text-slate-500 pb-2">intro price</span>
+                </div>
+                <p className="text-slate-600 leading-relaxed mb-5">
+                  Best for people who want a quick second look before canceling
+                  or downgrading subscriptions.
+                </p>
+                <button
+                  onClick={openFullAudit}
+                  className="w-full bg-slate-950 text-white px-5 py-4 rounded-2xl font-semibold hover:bg-slate-800 transition"
+                >
+                  {fullAuditUrl ? "Get The Full Audit" : "Reserve My Audit"}
+                </button>
+                <p className="text-xs text-slate-500 mt-4">
+                  No bank login required. You stay in control of what you share.
+                </p>
               </div>
             </div>
           </div>

@@ -38,6 +38,19 @@ Good simple options:
 
 Each lead includes the email address, source, scan totals, and top subscriptions to review.
 
+## Full Audit Offer
+
+The Full Audit button can point to a Stripe Payment Link or any checkout URL.
+
+Set this environment variable in Vercel when the offer is ready:
+
+```bash
+NEXT_PUBLIC_FULL_AUDIT_URL=https://buy.stripe.com/your-payment-link
+```
+
+If the variable is empty, the button says `Reserve My Audit` and sends visitors to
+the checklist email form instead.
+
 ## Deploy To Vercel
 
 1. Push this repo to GitHub.
@@ -47,7 +60,8 @@ Each lead includes the email address, source, scan totals, and top subscriptions
    - Install command: `npm install`
    - Output directory: leave blank
 4. Add `LEADS_WEBHOOK_URL` in the Vercel project settings.
-5. Deploy.
+5. Add `NEXT_PUBLIC_FULL_AUDIT_URL` when the paid audit checkout is ready.
+6. Deploy.
 
 ## First Business Offer
 
