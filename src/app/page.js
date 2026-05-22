@@ -639,20 +639,32 @@ export default function CreepCheckLandingPage() {
               the same review order shown in your scan.
             </p>
 
-            <form onSubmit={saveLead} className="max-w-xl mx-auto flex flex-col sm:flex-row gap-3">
-              <input
-                type="email"
-                value={email}
-                onChange={(event) => setEmail(event.target.value)}
-                placeholder="you@example.com"
-                className="flex-1 rounded-2xl px-5 py-4 text-slate-950 outline-none"
-              />
-              <button
-                disabled={isSavingLead}
-                className="bg-white text-slate-950 px-7 py-4 rounded-2xl text-base font-semibold hover:bg-slate-100 transition disabled:cursor-not-allowed disabled:opacity-70"
+            <form
+              onSubmit={saveLead}
+              className="max-w-2xl mx-auto rounded-3xl bg-white p-4 sm:p-5 text-left shadow-sm"
+            >
+              <label
+                htmlFor="checklist-email"
+                className="block text-sm font-semibold text-slate-950 mb-2"
               >
-                {isSavingLead ? "Saving..." : "Send Me The Checklist"}
-              </button>
+                Email the checklist to me
+              </label>
+              <div className="flex flex-col sm:flex-row gap-3">
+                <input
+                  id="checklist-email"
+                  type="email"
+                  value={email}
+                  onChange={(event) => setEmail(event.target.value)}
+                  placeholder="you@example.com"
+                  className="flex-1 rounded-2xl border-2 border-slate-300 bg-slate-50 px-5 py-4 text-slate-950 placeholder:text-slate-500 outline-none focus:border-amber-400 focus:bg-white"
+                />
+                <button
+                  disabled={isSavingLead}
+                  className="bg-slate-950 text-white px-7 py-4 rounded-2xl text-base font-semibold hover:bg-slate-800 transition disabled:cursor-not-allowed disabled:opacity-70"
+                >
+                  {isSavingLead ? "Saving..." : "Send Me The Checklist"}
+                </button>
+              </div>
             </form>
 
             {leadStatus && (
